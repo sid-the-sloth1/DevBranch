@@ -585,6 +585,9 @@
         }
         return newArray;
     }
+    function initialiseRecordPrizes() {
+        
+    }
     ///CSS
 
 })();
