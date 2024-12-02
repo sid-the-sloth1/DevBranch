@@ -20,7 +20,8 @@
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
-    const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" } }, "api_ct": "" };
+    let cdForTypingGame;
+    const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" }, "typoGame": { "name": "Typocalypse Helper", "def": "yes" } }, "api_ct": "" };
 
     const wordList = ["elf", "eve", "fir", "ham", "icy", "ivy", "joy", "pie", "toy", "gift", "gold", "list", "love", "nice", "sled", "star", "wish", "wrap", "xmas", "yule", "angel", "bells", "cider", "elves", "goose", "holly", "jesus", "merry", "myrrh", "party", "skate", "visit", "candle", "creche", "cookie", "eggnog", "family", "frosty", "icicle", "joyful", "manger", "season", "spirit", "tinsel", "turkey", "unwrap", "wonder", "winter", "wreath", "charity", "chimney", "festive", "holiday", "krampus", "mittens", "naughty", "package", "pageant", "rejoice", "rudolph", "scrooge", "snowman", "sweater", "tidings", "firewood", "nativity", "reindeer", "shopping", "snowball", "stocking", "toboggan", "trimming", "vacation", "wise men", "workshop", "yuletide", "chestnuts", "christmas", "fruitcake", "greetings", "mince pie", "mistletoe", "ornaments", "snowflake", "tradition", "candy cane", "decoration", "ice skates", "jack frost", "north pole", "nutcracker", "saint nick", "yule log", "card", "jolly", "hope", "scarf", "candy", "sleigh", "parade", "snowy", "wassail", "blizzard", "noel", "partridge", "give", "carols", "tree", "fireplace", "socks", "lights", "kings", "goodwill", "sugarplum", "bonus", "coal", "snow", "happy", "presents", "pinecone"];
 
@@ -70,6 +71,12 @@
                 metadata.cache.hangman.len = false;
                 metadata.cache.hangman.list = [];
                 metadata.cache.hangman.chars = [];
+            } else if (this.state === "Typocalypse") {
+                try {
+                    clearInterval(cdForTypingGame);
+                } catch (error) {
+                    console.log(`CT Helper: ${error}`);
+                }
             }
             this.state = "Inactive";
             this.html = "";
@@ -130,6 +137,38 @@
             }
             this.html = `<p style="font-weight: bold; font-size: 16px; margin: 8px; text-align: center;">Possible Solutions</p><p class="ctHelperSuccess">${list.join('<label class="helcostrDoesntLikeGreenCommas">, </label>')}</p><p style="font-weight: bold; font-size: 16px; margin: 8px; text-align: center;">Suggested Letters</p><p class="ctHelperSuccess">${lettersArray.join('<label class="helcostrDoesntLikeGreenCommas">, </label>')}</p>`;
             this.update();
+        },
+        'gameTypocalypseStart': function () {
+            document.querySelector(".hardyGameBoxContent").addEventListener("click", (e) => {
+                const target = e.target;
+                if (target.className === "hardyCTTypoAnswer") {
+                    const input = document.querySelector("div[class^='game'] div[class^='board'] input");
+                    if (input) {
+                        input.value = target.getAttribute("hardy").replace("-", " ");//the answer that has to be typed
+                        const event = new Event('input', { bubbles: true });
+                        const tracker = input._valueTracker;
+                        if (tracker) {
+                            tracker.setValue('');
+                        }
+                        input.dispatchEvent(event);
+                    }
+                }
+            });
+            cdForTypingGame = setInterval(() => {
+                const boxes = document.querySelectorAll("div[class^='game'] div[class^='board'] div[class^='gift']");
+                const length = boxes.length;
+                const array = [];
+                if (length > 0) {
+                    for (const gift of boxes) {
+                        let phrase = gift.innerText;
+                        phrase = phrase.replace(" ", "-")
+                        array.push(`<button class="hardyCTTypoAnswer" hardy="${phrase}">${phrase}</button>`);
+                    }
+                    array.reverse();
+                }
+                this.html = array.join("");
+                this.update();
+            }, 500);
         }
     }
     /////
@@ -250,6 +289,12 @@
                             gameHelper.start();
                             metadata.cache.hangman.len = data.progress.words;
                             gameHelper.hangman_charLength();
+                        } else if (gameType === "gameTypocalypse" && saved.checkbox["typoGame"] === "yes") {
+                            if (gameHelper.state !== "Typocalypse") {
+                                gameHelper.state = "Typocalypse";
+                                gameHelper.start();
+                                gameHelper.gameTypocalypseStart();
+                            }
                         }
                     }
                 } else {
@@ -365,6 +410,7 @@
             highlighter_css()
             gamesHelper_css();
             getItemInfoFromSheet()
+            pruneOldFinds();
         }
     }
     function updateModifierText() {
@@ -824,7 +870,17 @@
     function formatNumber(num) {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     }
-
+    function pruneOldFinds() {
+        const last_prune = GM_getValue("last_prune");
+        if (last_prune === null || typeof last_prune == "undefined" || last_prune == 0) {
+            GM_setValue("last_prune", Math.round(Date.now() / 1000));
+        } else {
+            if ((Math.round(Date.now() / 1000) - last_prune) >= 7776000) {
+                localStorage.setItem('ctHelperFound', JSON.stringify({ items: {} }));
+                GM_setValue("last_prune", Math.round(Date.now() / 1000));
+            }
+        }
+    }
     ///CSS
 
 })();
