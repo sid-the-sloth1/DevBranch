@@ -872,12 +872,13 @@
     }
     function pruneOldFinds() {
         const last_prune = GM_getValue("last_prune");
+        const stamp = Math.round(Date.now() / 1000);
         if (last_prune === null || typeof last_prune == "undefined" || last_prune == 0) {
-            GM_setValue("last_prune", Math.round(Date.now() / 1000));
+            GM_setValue("last_prune", stamp);
         } else {
-            if ((Math.round(Date.now() / 1000) - last_prune) >= 7776000) {
+            if ((stamp - last_prune) >= 7776000) {
                 localStorage.setItem('ctHelperFound', JSON.stringify({ items: {} }));
-                GM_setValue("last_prune", Math.round(Date.now() / 1000));
+                GM_setValue("last_prune", stamp);
             }
         }
     }
