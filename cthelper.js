@@ -357,11 +357,15 @@
         document.querySelector(`.${selector}`).innerHTML = `<label>${label}(${length})</label><div class="content">${content}</div>`;
     }
     function initiate() {
-        createStorage();
-        addBox();
-        highlighter_css()
-        gamesHelper_css();
-        getItemInfoFromSheet()
+        if (window.location.href.includes("page=ctitemsFound")) {
+            createItemsTable();
+        } else {
+            createStorage();
+            addBox();
+            highlighter_css()
+            gamesHelper_css();
+            getItemInfoFromSheet()
+        }
     }
     function updateModifierText() {
         setTimeout(() => {
@@ -609,7 +613,7 @@
             }
             console.log(saved);
             //html += `<br><p>Miscellaneous</p><label>API Key(Public): </label><input type="text" name="api_ct" value="${saved.misc.api_ct}"><br>`;
-            html += `<button class="hardy-save-prefs">Save</button>`;
+            html += `<button class="hardy-save-prefs">Save</button> <button class="hardy-ct-itemstable">Items Table</button>`;
             box.querySelector(".hardy_modal_content").innerHTML = html;
             const firstgameHelperLabel = box.querySelector('input[name="wreath"]').previousSibling;
             const p = createElement("p", {});
@@ -635,7 +639,7 @@
                         }
                     } else if (inpType === "color") {
                         saved.color[`${name}`] = document.querySelector(`input[name="${name}"]`).getAttribute("value");
-                    } 
+                    }
                     /* else if (inpType === "text") {
                         const value = input.value;
                         if (value === null || value === "" || typeof value === "undefined") {
@@ -647,6 +651,10 @@
                 }
                 savePrefs();
                 box.querySelector(".hardy_modal_msg").innerHTML = `Preferences have been saved successfully!! Refresh page to ensure that the changes are synced properly.`;
+            });
+            box.querySelector(".hardy-ct-itemstable").addEventListener("click", () => {
+                window.location.href = "https://www.torn.com/christmas_town.php#/page=ctitemsFound";
+                window.location.reload();
             });
         }
     }
@@ -672,43 +680,150 @@
         localStorage.setItem("ctHelperFound", JSON.stringify(obj));
     }
 
-function getItemInfoFromSheet() {
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbyRfg1Cx2Jm3IuCWASUu8czKeP3wm5jKsie4T4bxwZHzXTmPbaw4ybPRA/exec?key=getItems';
-    const updateInterval = 14400;
-    const requestTimeout = 20000;
-    const lastUpdate = GM_getValue("last_update_item_metadata", 0);
-    if ((Date.now() / 1000) - lastUpdate > updateInterval) {
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: apiUrl,
-            timeout: requestTimeout,
-            onload: function (response) {
-                try {
-                const data = JSON.parse(response.responseText);
-                    if (data && Array.isArray(data.items)) {
-                        let itemsObject = {
-                            items: data.items.reduce((acc, item) => {
-                                let [id, name, value] = item;
-                                acc[id] = { name, value };
-                                return acc;
-                            }, {})
-                        };
-                        localStorage.setItem('ctHelperItemInfo', JSON.stringify(itemsObject));
-                        GM_setValue("last_update_item_metadata", (Date.now() / 1000));
+    function getItemInfoFromSheet() {
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbyRfg1Cx2Jm3IuCWASUu8czKeP3wm5jKsie4T4bxwZHzXTmPbaw4ybPRA/exec?key=getItems';
+        const updateInterval = 14400;
+        const requestTimeout = 20000;
+        const lastUpdate = GM_getValue("last_update_item_metadata", 0);
+        if ((Date.now() / 1000) - lastUpdate > updateInterval) {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: apiUrl,
+                timeout: requestTimeout,
+                onload: function (response) {
+                    try {
+                        const data = JSON.parse(response.responseText);
+                        if (data && Array.isArray(data.items)) {
+                            let itemsObject = {
+                                items: data.items.reduce((acc, item) => {
+                                    let [id, name, value] = item;
+                                    acc[id] = { name, value };
+                                    return acc;
+                                }, {})
+                            };
+                            localStorage.setItem('ctHelperItemInfo', JSON.stringify(itemsObject));
+                            GM_setValue("last_update_item_metadata", (Date.now() / 1000));
+                        }
+                    } catch (error) {
+                        console.error('Error processing API response:', error.message);
                     }
-                } catch (error) {
-                    console.error('Error processing API response:', error.message);
+                },
+                onerror: function () {
+                    console.error('Request failed. Unable to fetch item data.');
+                },
+                ontimeout: function () {
+                    console.error('Request timed out.');
                 }
-            },
-            onerror: function () {
-                console.error('Request failed. Unable to fetch item data.');
-            },
-            ontimeout: function () {
-                console.error('Request timed out.');
-            }
-        });
+            });
+        }
     }
-}
+    function createItemsTable() {
+        waitForElement(".content-wrapper", 1000, 40, "bdhhfbjvefefnleirfv").then(() => {
+            if (document.querySelector('.hardyCTBox2')) return;
+
+            const wrapper = document.querySelector('.content-wrapper');
+            const container = document.createElement('div');
+            container.className = 'hardyCTBox2';
+            container.innerHTML = '<div class="hardyCTTable" style="overflow-x:auto;"></div><button id="hardyctHelperdelete">Delete Finds</button><button id="go_to_ct">Go back to Christmas Town</button><div class="hardyCTtextBox"></div>';
+            wrapper.appendChild(container);
+            container.addEventListener('click', handleButtonClick);
+            populateItemTable();
+
+            function handleButtonClick(e) {
+                const { id } = e.target;
+
+                if (id === 'hardyctHelperSave') {
+                    saveSettings();
+                    location.reload();
+                } else if (id === 'hardyctHelperdelete') {
+                    updateTextBox(
+                        `<p>Are you sure you want to delete the finds data?</p>
+                     <button id="hardyCTConfirmDelete">Yes</button>
+                     <button id="hardyCTNoDelete">No</button>`
+                    );
+                } else if (id === 'hardyCTConfirmDelete') {
+                    clearSavedData();
+                } else if (id === 'hardyCTNoDelete') {
+                    updateTextBox('');
+                } else if (id === 'go_to_ct') {
+                    window.location.href = 'https://www.torn.com/christmas_town.php';
+                }
+            }
+
+            function updateTextBox(content) {
+                const textBox = document.querySelector('.hardyCTtextBox');
+                if (textBox) textBox.innerHTML = content;
+            }
+
+            function clearSavedData() {
+                localStorage.setItem('ctHelperFound', JSON.stringify({ items: {} }));
+                updateTextBox('<label class="ctHelperSuccess">Data deleted!</label>');
+                clearTableContent();
+            }
+
+            function clearTableContent() {
+                const table = document.querySelector('.hardyCTTable');
+                if (table) table.innerHTML = '';
+            }
+
+            function populateItemTable() {
+                const itemData = localStorage.getItem('ctHelperItemInfo');
+                const marketValueData = itemData ? JSON.parse(itemData) : null;
+
+                if (!marketValueData) {
+                    showErrorMessage(
+                        'Unable to get data from the spreadsheet. Kindly refresh the page. Contact Father [2131687] if the problem persists.'
+                    );
+                    return;
+                }
+
+                const savedData = getRecordedPrizes();
+                if (!Object.keys(savedData.items).length) {
+                    showErrorMessage("You haven't found any items yet. Try again later!");
+                    return;
+                }
+
+                displayItemTable(savedData.items, marketValueData.items);
+            }
+
+            function showErrorMessage(message) {
+                document.querySelector('.hardyCTtextBox').innerHTML = `<label class="ctHelperError">${message}</label>`;
+            }
+
+            function displayItemTable(savedItems, marketItems) {
+                let calc = { totalValue: 0, count: 0 };
+                const rows = Object.entries(savedItems)
+                    .map(([id, count]) => {
+                        const item = marketItems[id];
+                        const price = count * item.value;
+                        calc.totalValue += price;
+                        calc.count += count;
+
+                        return `
+                        <tr>
+                            <td><img src="/images/items/${id}/medium.png" alt="${item.name}"></td>
+                            <td><label>${item.name}</label></td>
+                            <td><label>${count}</label></td>
+                            <td><label>$${formatNumber(item.value)}</label></td>
+                            <td><label>$${formatNumber(price)}</label></td>
+                        </tr>`;
+                    })
+                    .sort((a, b) => b.price - a.price);
+
+                document.querySelector('.hardyCTTable').innerHTML = `
+                <table>
+                    <tr><th>Image</th><th>Item Name</th><th>Amount</th><th>Price</th><th>Total</th></tr>
+                    ${rows.join('')}
+                </table>
+                <p>Total value: $${formatNumber(calc.totalValue)}</p>
+                <p>Number of Items: ${calc.count}</p>
+                <p>Average value of an item: $${formatNumber(Math.round(calc.totalValue / calc.count))}</p>`;
+            }
+        })
+    }
+    function formatNumber(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    }
 
     ///CSS
 
