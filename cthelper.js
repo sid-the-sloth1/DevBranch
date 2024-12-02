@@ -9,6 +9,9 @@
 // @grant        unsafeWindow
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_xmlhttpRequest
+// @connect      script.google.com
+// @connect      script.googleusercontent.com
 // ==/UserScript==
 (function () {
     'use strict';
@@ -17,7 +20,7 @@
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
-    const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" } } };
+    const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" } }, "api_ct": "" };
 
     const wordList = ["elf", "eve", "fir", "ham", "icy", "ivy", "joy", "pie", "toy", "gift", "gold", "list", "love", "nice", "sled", "star", "wish", "wrap", "xmas", "yule", "angel", "bells", "cider", "elves", "goose", "holly", "jesus", "merry", "myrrh", "party", "skate", "visit", "candle", "creche", "cookie", "eggnog", "family", "frosty", "icicle", "joyful", "manger", "season", "spirit", "tinsel", "turkey", "unwrap", "wonder", "winter", "wreath", "charity", "chimney", "festive", "holiday", "krampus", "mittens", "naughty", "package", "pageant", "rejoice", "rudolph", "scrooge", "snowman", "sweater", "tidings", "firewood", "nativity", "reindeer", "shopping", "snowball", "stocking", "toboggan", "trimming", "vacation", "wise men", "workshop", "yuletide", "chestnuts", "christmas", "fruitcake", "greetings", "mince pie", "mistletoe", "ornaments", "snowflake", "tradition", "candy cane", "decoration", "ice skates", "jack frost", "north pole", "nutcracker", "saint nick", "yule log", "card", "jolly", "hope", "scarf", "candy", "sleigh", "parade", "snowy", "wassail", "blizzard", "noel", "partridge", "give", "carols", "tree", "fireplace", "socks", "lights", "kings", "goodwill", "sugarplum", "bonus", "coal", "snow", "happy", "presents", "pinecone"];
 
@@ -182,12 +185,57 @@
                         }
                         updateModifierText();
                     }
+                    if (data.mapData.trigger && data.mapData.trigger.item) {
+                        const trigger = data.mapData.trigger;
+                        if (trigger.message.includes("You find")) {
+                            const itemUrl = trigger.item.image.url;
+                            const regx = /\/images\/items\/([0-9]+)\/large\.png/g;
+                            if (regx.test(itemUrl)) {
+                                const itemId = itemUrl.split("/")[3];
+                                const savedData = getRecordedPrizes();
+                                if (savedData.items[itemId]) {
+                                    savedData.items[itemId] += 1;
+                                } else {
+                                    savedData.items[itemId] = 1;
+                                }
+                                setRecordPrizes(savedData);
+                            }
+                        }
+                    }
+                    if (data.mapData.cellEvent && data.mapData.cellEvent.prizes && data.mapData.cellEvent.prizes.length > 0) {
+                        const savedData = getRecordedPrizes();
+                        for (const prize of data.mapData.cellEvent.prizes) {
+                            if (prize.category === "tornItems") {
+                                const itemId = prize.type;
+                                if (savedData.items[itemId]) {
+                                    savedData.items[itemId] += 1;
+                                } else {
+                                    savedData.items[itemId] = 1;
+                                }
+                            }
+                        }
+                        setRecordPrizes(savedData);
+                    }
+                    highlightNPC();
                 }
-                highlightNPC();
             } else if (url.includes("christmas_town.php?q=miniGameAction")) {
                 let body = false;
                 if (init.body) {
                     body = JSON.parse(init.body);
+                }
+                if (data.prizes && data.prizes.length > 0) {
+                    const savedData = getRecordedPrizes();
+                    for (const prize of data.prizes) {
+                        if (prize.category === "tornItems") {
+                            const itemId = prize.type;
+                            if (savedData.items[itemId]) {
+                                savedData.items[itemId] += 1;
+                            } else {
+                                savedData.items[itemId] = 1;
+                            }
+                        }
+                    }
+                    setRecordPrizes(savedData);
                 }
                 if (body && body.action && body.action === "start") {
                     if (body.gameType) {
@@ -250,6 +298,21 @@
                         }
                     }
                 }
+            } else if (url.includes("q=openChest")) {
+                if (data.status && data.status === "success" && data.prizes && data.prizes.length > 0) {
+                    const savedData = getRecordedPrizes();
+                    for (const prize of data.prizes) {
+                        if (prize.category === "tornItems") {
+                            const itemId = prize.type;
+                            if (savedData.items[itemId]) {
+                                savedData.items[itemId] += 1;
+                            } else {
+                                savedData.items[itemId] = 1;
+                            }
+                        }
+                    }
+                    setRecordPrizes(savedData);
+                }
             }
         });
         return response_;
@@ -298,6 +361,7 @@
         addBox();
         highlighter_css()
         gamesHelper_css();
+        getItemInfoFromSheet()
     }
     function updateModifierText() {
         setTimeout(() => {
@@ -482,7 +546,12 @@
                             saved.color[`color_${checkbox}`] = options.checkbox[checkbox].color;
                         }
                     }
-                }
+                } /*else {
+                    if (!saved.misc) {
+                        saved.misc = {};
+                    }
+                    saved.misc[option] = options[option];
+                }*/
             }
             savePrefs();
         } else {
@@ -538,6 +607,8 @@
                 const color = options.checkbox[checkbox].color;
                 html += `<label>${info}: </label>${color ? `<input type="color" name="color_${checkbox}" value="${saved.color[`color_${checkbox}`]}">` : ''}<input type="checkbox" name="${checkbox}" ${preferenceHandler("checkbox", checkbox, options.checkbox[checkbox].def, "")}><br>`;
             }
+            console.log(saved);
+            //html += `<br><p>Miscellaneous</p><label>API Key(Public): </label><input type="text" name="api_ct" value="${saved.misc.api_ct}"><br>`;
             html += `<button class="hardy-save-prefs">Save</button>`;
             box.querySelector(".hardy_modal_content").innerHTML = html;
             const firstgameHelperLabel = box.querySelector('input[name="wreath"]').previousSibling;
@@ -547,7 +618,7 @@
             document.body.insertBefore(box, document.body.firstChild);
             box.querySelectorAll('input[type="color"]').forEach((input) => {
                 input.onchange = function () {
-                    input.setAttribute("value", this.value); //this.value == this.value;
+                    input.setAttribute("value", this.value);
                 };
             });
 
@@ -564,7 +635,15 @@
                         }
                     } else if (inpType === "color") {
                         saved.color[`${name}`] = document.querySelector(`input[name="${name}"]`).getAttribute("value");
-                    }
+                    } 
+                    /* else if (inpType === "text") {
+                        const value = input.value;
+                        if (value === null || value === "" || typeof value === "undefined") {
+                            saved.misc[name] = "";
+                        } else {
+                            saved.misc[name] = value;
+                        }
+                    } */
                 }
                 savePrefs();
                 box.querySelector(".hardy_modal_msg").innerHTML = `Preferences have been saved successfully!! Refresh page to ensure that the changes are synced properly.`;
@@ -585,9 +664,52 @@
         }
         return newArray;
     }
-    function initialiseRecordPrizes() {
-        
+    function getRecordedPrizes() {
+        const storedInfo = localStorage.getItem("ctHelperFound") || '{"items":{}}';
+        return JSON.parse(storedInfo);
     }
+    function setRecordPrizes(obj) {
+        localStorage.setItem("ctHelperFound", JSON.stringify(obj));
+    }
+
+function getItemInfoFromSheet() {
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbyRfg1Cx2Jm3IuCWASUu8czKeP3wm5jKsie4T4bxwZHzXTmPbaw4ybPRA/exec?key=getItems';
+    const updateInterval = 14400;
+    const requestTimeout = 20000;
+    const lastUpdate = GM_getValue("last_update_item_metadata", 0);
+    if ((Date.now() / 1000) - lastUpdate > updateInterval) {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: apiUrl,
+            timeout: requestTimeout,
+            onload: function (response) {
+                try {
+                const data = JSON.parse(response.responseText);
+                    if (data && Array.isArray(data.items)) {
+                        let itemsObject = {
+                            items: data.items.reduce((acc, item) => {
+                                let [id, name, value] = item;
+                                acc[id] = { name, value };
+                                return acc;
+                            }, {})
+                        };
+                        localStorage.setItem('ctHelperItemInfo', JSON.stringify(itemsObject));
+                        GM_setValue("last_update_item_metadata", (Date.now() / 1000));
+                    }
+                } catch (error) {
+                    console.error('Error processing API response:', error.message);
+                }
+            },
+            onerror: function () {
+                console.error('Request failed. Unable to fetch item data.');
+            },
+            ontimeout: function () {
+                console.error('Request timed out.');
+            }
+        });
+    }
+}
+
     ///CSS
 
 })();
