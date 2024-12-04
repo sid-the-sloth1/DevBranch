@@ -908,10 +908,10 @@ body.dark-mode .hardyGameBoxContent { background-color: #333; }
 .hardyCTTypoAnswer:hover, .hardyCTTypoAnswer:focus { color: white; }`);
     //Dialog
     GM_addStyle(`.hardy_modal_dialog { position: fixed; z-index: 10211; padding-top: 6px; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); }
-.hardy_modal { position: absolute; top: 50%; left: 50%; height: auto; transform: translate(-50%, -50%); background-color: #f2f2f2; width: auto; border-radius: 0.5rem; overflow: auto; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); }
+.hardy_modal { position: absolute; top: 50%; left: 50%; height: auto; transform: translate(-50%, -50%); background-color: #f2f2f2; max-width: 70%; width: auto; border-radius: 0.5rem; overflow: auto; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); }
 .hardy_modal_header { background-color: #000; text-align: center; color: #fff; border-radius: 6px 6px 0 0; padding: 5px; width: 100%; }
 .hardy_modal_close { padding: 5px 8px; background-color: #d76767; border-radius: 6px; margin: 5px; border: none; cursor: pointer; font-weight: bold; }
-.hardy_modal_content { margin: 4px; display: block; padding: 10px; overflow-y: auto; }
+.hardy_modal_content { margin: 4px; display: block; padding: 10px; overflow-y: auto; overflow-x: auto;}
 .hardy-save-prefs { background-color: #40d546; color: #000; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: bold; margin-top: 15px; }
 .hardy_modal_msg { margin: 10px; padding: 5px; color: #191919; font-size: 0.9em; text-align: center; }
 body.dark-mode .hardy_modal { background-color: #333; }
