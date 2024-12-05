@@ -891,7 +891,7 @@
 .hardyNearbyItems { margin-right: 5px; }
 .hardyNearbyChests { margin-left: 5px; }
 .hardyNearbyItems label, .hardyNearbyChests label { display: block; text-align: center; font-weight: bold; font-size: 1.1em; }
-.hardyNearbyItems .content, .hardyNearbyChests .content { padding: 10px; border-radius: 5px; text-align: left; font-size: 0.9em; line-height: 1.3; overflow-y: auto; max-height: 80px; }
+.hardyNearbyItems .content, .hardyNearbyChests .content { padding: 10px; border-radius: 5px; text-align: left; font-size: 0.7em; line-height: 1.1; overflow-y: auto; max-height: 80px; }
 .ctHelperSuccess { color: green; font-weight: bold; }
 .hardyCTContent > div:first-child { display: flex; align-items: center; justify-content: space-between; }
 .hardyCTContent > div:first-child > div { text-align: center; flex-grow: 1; }
@@ -908,7 +908,7 @@ body.dark-mode .hardyGameBoxContent { background-color: #333; }
 .hardyCTTypoAnswer:hover, .hardyCTTypoAnswer:focus { color: white; }`);
     //Dialog
     GM_addStyle(`.hardy_modal_dialog { position: fixed; z-index: 10211; padding-top: 6px; left: 0; top: 0; width: 100%; height: 80%; background-color: rgba(0, 0, 0, 0.4); }
-.hardy_modal { position: absolute; top: 50%; left: 50%; height: auto; transform: translate(-50%, -50%); background-color: #f2f2f2; max-width: 70%; width: auto; border-radius: 0.5rem; overflow: auto; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); }
+.hardy_modal { position: absolute; top: 50%; left: 50%; height: auto; max-height: 80%; transform: translate(-50%, -50%); background-color: #f2f2f2; max-width: 70%; width: 80%; border-radius: 0.5rem; overflow: auto; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); }
 .hardy_modal_header { background-color: #000; text-align: center; color: #fff; border-radius: 6px 6px 0 0; padding: 5px; width: 100%; }
 .hardy_modal_close { padding: 5px 8px; background-color: #d76767; border-radius: 6px; margin: 5px; border: none; cursor: pointer; font-weight: bold; }
 .hardy_modal_content { margin: 4px; display: block; padding: 10px; overflow-y: auto; overflow-x: auto;}
