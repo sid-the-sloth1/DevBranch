@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Christmas Town Helper (Rewrite Beta)
 // @namespace    hardy.ct.helper
-// @version      3.0
+// @version      3.0.1
 // @description  Christmas Town Helper. Highlights Items, Chests, NPCs. And Games Cheat
 // @author       Hardy [2131687]
 // @match        https://www.torn.com/christmas_town.php*
@@ -879,7 +879,57 @@
             }
         }
     }
-    // General
+    const innerWidth = window.innerWidth;
+    if (innerWidth <= 600) {
+        // General
+    GM_addStyle(`.ct-user-wrap .user-map:before { display: none; }
+.hardyGameBoxContent { background-color: #f2f2f2; border: 1px solid #ccc; border-radius: 0 0 10px 10px; max-height: 150px; margin-bottom: 5px; padding: 10px; }
+.helcostrDoesntLikeGreenCommas { color: black; }
+.hardyCTBox { background-color: #f2f2f2; border: 1px solid #ccc; border-radius: 10px; max-height: 250px; }
+.hardyCTHeader { background-color: #200505; color: #f2f2f2; padding: 6px; font-size: 1.5em; font-weight: bold; text-align: center; border-radius: 10px 10px 0 0; }
+.hardyCTContent { padding: 10px; font-size: 1.2em; }
+.ctRecordLink { color: #121212; border: none; padding: 8px; cursor: pointer; }
+.nearby-items-chests { display: flex; justify-content: space-between; margin-top: 10px; }
+.hardyNearbyItems, .hardyNearbyChests { background-color: #f9f9f9; padding: 5px; border: 1px solid #ddd; border-radius: 8px; flex: 1;}
+.hardyNearbyItems { margin-right: 5px; }
+.hardyNearbyChests { margin-left: 5px; }
+.hardyNearbyItems label, .hardyNearbyChests label { display: block; text-align: center; font-weight: bold; font-size: 1.1em; }
+.hardyNearbyItems .content, .hardyNearbyChests .content { padding: 10px; border-radius: 5px; text-align: left; font-size: 0.7em; line-height: 1.1; overflow-y: auto; max-height: 80px; }
+.ctHelperSuccess { color: green; font-weight: bold; }
+.hardyCTContent > div:first-child { display: flex; align-items: center; justify-content: space-between; }
+.hardyCTContent > div:first-child > div { text-align: center; flex-grow: 1; }
+
+body.dark-mode .hardyCTHeader { background-color: #191919; }
+body.dark-mode .hardyCTBox { background-color: #333; border: 1px solid #444; }
+body.dark-mode .hardyCTContent { color: #ddd; }
+body.dark-mode .ctRecordLink { color: #f0f0f0; }
+body.dark-mode .helcostrDoesntLikeGreenCommas { color: white; }
+body.dark-mode .hardyNearbyItems, body.dark-mode .hardyNearbyChests { background-color: #2c2c2c; border: 1px solid #555; color: #ddd; }
+body.dark-mode .ctHelperSuccess { color: lightgreen; }
+body.dark-mode .hardyGameBoxContent { background-color: #333; }
+.hardyCTTypoAnswer { padding: 5px 6px; background-color: #4a9f33; color: white; margin: 5px; border-radius: 5px; }
+.hardyCTTypoAnswer:hover, .hardyCTTypoAnswer:focus { color: white; }`);
+    //Dialog
+    GM_addStyle(`.hardy_modal_dialog { position: fixed; z-index: 10211; padding-top: 6px; left: 0; top: 0; width: 100%; height: 80%; background-color: rgba(0, 0, 0, 0.4); }
+.hardy_modal { position: absolute; top: 50%; left: 50%; height: auto; max-height: 80%; transform: translate(-50%, -50%); background-color: #f2f2f2; max-width: 70%; width: 80%; border-radius: 0.5rem; overflow: auto; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); }
+.hardy_modal_header { background-color: #000; text-align: center; color: #fff; border-radius: 6px 6px 0 0; padding: 5px; width: 100%; }
+.hardy_modal_close { padding: 5px 8px; background-color: #d76767; border-radius: 6px; margin: 5px; border: none; cursor: pointer; font-weight: bold; }
+.hardy_modal_content { margin: 4px; display: block; padding: 10px; overflow-y: auto; overflow-x: auto;}
+.hardy-save-prefs { background-color: #40d546; color: #000; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 1em; font-weight: bold; margin-top: 15px; }
+.hardy_modal_msg { margin: 10px; padding: 5px; color: #191919; font-size: 0.9em; text-align: center; }
+body.dark-mode .hardy_modal { background-color: #333; }
+body.dark-mode .hardy_modal_header { background-color: #191919; }
+body.dark-mode .hardy_modal_close { background-color: #d76767; color: #e2dbdb; }
+body.dark-mode .hardy-save-prefs { background-color: #4CAF50; color: #e2dbdb; }
+body.dark-mode .hardy_modal_msg { color: white; }
+.hardy_modal_content p { text-align: center; font-size: 1.2em; font-weight: bold; }
+.hardy_modal_content label { display: inline-block; width: 70%; margin-bottom: 10px; font-size: 1em; font-weight: bold; vertical-align: middle; }
+.hardy_modal_content input[type = "checkbox"] { margin-left: 10px; vertical-align: middle; }
+.hardy_modal_content input[type = "checkbox"] { transform: scale(1.2); }
+.hardy_modal_content div { margin-bottom: 15px; }
+.hardy-ct-itemstable { background-color: #3a8fe2; color: white; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 15px; }`);
+    } else {
+        // General
     GM_addStyle(`.ct-user-wrap .user-map:before { display: none; }
 .hardyGameBoxContent { background-color: #f2f2f2; border: 1px solid #ccc; border-radius: 0 0 10px 10px; max-height: 150px; margin-bottom: 5px; padding: 10px; }
 .helcostrDoesntLikeGreenCommas { color: black; }
@@ -926,6 +976,7 @@ body.dark-mode .hardy_modal_msg { color: white; }
 .hardy_modal_content input[type = "checkbox"] { transform: scale(1.2); }
 .hardy_modal_content div { margin-bottom: 15px; }
 .hardy-ct-itemstable { background-color: #3a8fe2; color: white; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 1em; margin-top: 15px; }`);
+    }
     //Table
     GM_addStyle(`.hardyCTBox2 { padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; margin-top: 20px; font-family: Arial, sans-serif; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
 body.dark-mode .hardyCTBox2 { background-color: #1e1e1e; border: 1px solid #333; box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1); color: #f0f0f0; }
