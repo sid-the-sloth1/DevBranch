@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Christmas Town Helper (Rewrite Beta)
+// @name         Christmas Town Helper
 // @namespace    hardy.ct.helper
 // @version      3.0.1
 // @description  Christmas Town Helper. Highlights Items, Chests, NPCs. And Games Cheat
@@ -10,13 +10,15 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
+// @updateURL    https://github.com/sid-the-sloth1/torn-qol-scripts/raw/refs/heads/main/Christmas%20Town.user.js
+// @downloadURL  https://github.com/sid-the-sloth1/torn-qol-scripts/raw/refs/heads/main/Christmas%20Town.user.js
 // @connect      script.google.com
 // @connect      script.googleusercontent.com
 // ==/UserScript==
 (function () {
     'use strict';
     ////
-    const version = "3.0";
+    const version = "3.0.1";
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
@@ -857,6 +859,13 @@
                 <table>
                     <tr><th>Image</th><th>Item Name</th><th>Amount</th><th>Price</th><th>Total</th></tr>
                     ${rows.join('')}
+                <tr>
+                  <td><img src="/images/items/315/medium.png"></td>
+                  <td>Allan, Please adḍ details!</td>
+                  <td>0</td>
+                  <td>$0</td>
+                  <td>$0</td>
+                </tr>
                 </table>
                 <p>Total value: $${formatNumber(calc.totalValue)}</p>
                 <p>Number of Items: ${calc.count}</p>
