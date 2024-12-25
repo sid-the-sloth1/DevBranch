@@ -887,13 +887,6 @@
                 <table>
                     <tr><th>Image</th><th>Item Name</th><th>Amount</th><th>Price</th><th>Total</th></tr>
                     ${rows.join('')}
-                <tr>
-                  <td><img src="/images/items/315/medium.png"></td>
-                  <td>Allan, Please adḍ details!</td>
-                  <td>0</td>
-                  <td>$0</td>
-                  <td>$0</td>
-                </tr>
                 </table>
                 <p>Total value: $${formatNumber(calc.totalValue)}</p>
                 <p>Number of Items: ${calc.count}</p>

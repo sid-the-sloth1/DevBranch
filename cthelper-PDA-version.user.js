@@ -25,7 +25,7 @@
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
     let cdForTypingGame;
-     const chirp = new Audio("https://www.torn.com/js/chat/sounds/Chirp_1.mp3");
+    const chirp = new Audio("https://www.torn.com/js/chat/sounds/Chirp_1.mp3");
     const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" }, "typoGame": { "name": "Typocalypse Helper", "def": "yes" }, "chirp_alert_ct": { "name": "Chirp Alert", "def": "no" } }, "api_ct": "" };
     const wordList = ["elf", "eve", "fir", "ham", "icy", "ivy", "joy", "pie", "toy", "gift", "gold", "list", "love", "nice", "sled", "star", "wish", "wrap", "xmas", "yule", "angel", "bells", "cider", "elves", "goose", "holly", "jesus", "merry", "myrrh", "party", "skate", "visit", "candle", "creche", "cookie", "eggnog", "family", "frosty", "icicle", "joyful", "manger", "season", "spirit", "tinsel", "turkey", "unwrap", "wonder", "winter", "wreath", "charity", "chimney", "festive", "holiday", "krampus", "mittens", "naughty", "package", "pageant", "rejoice", "rudolph", "scrooge", "snowman", "sweater", "tidings", "firewood", "nativity", "reindeer", "shopping", "snowball", "stocking", "toboggan", "trimming", "vacation", "wise men", "workshop", "yuletide", "chestnuts", "christmas", "fruitcake", "greetings", "mince pie", "mistletoe", "ornaments", "snowflake", "tradition", "candy cane", "decoration", "ice skates", "jack frost", "north pole", "nutcracker", "saint nick", "yule log", "card", "jolly", "hope", "scarf", "candy", "sleigh", "parade", "snowy", "wassail", "blizzard", "noel", "partridge", "give", "carols", "tree", "fireplace", "socks", "lights", "kings", "goodwill", "sugarplum", "bonus", "coal", "snow", "happy", "presents", "pinecone"];
 
@@ -867,13 +867,13 @@
             function displayItemTable(savedItems, marketItems) {
                 let calc = { totalValue: 0, count: 0 };
                 const rows = Object.entries(savedItems)
-                .map(([id, count]) => {
-                    const item = marketItems[id];
-                    const price = count * item.value;
-                    calc.totalValue += price;
-                    calc.count += count;
+                    .map(([id, count]) => {
+                        const item = marketItems[id];
+                        const price = count * item.value;
+                        calc.totalValue += price;
+                        calc.count += count;
 
-                    return `
+                        return `
                         <tr>
                             <td><img src="/images/items/${id}/medium.png" alt="${item.name}"></td>
                             <td><label>${item.name}</label></td>
@@ -881,20 +881,13 @@
                             <td><label>$${formatNumber(item.value)}</label></td>
                             <td><label>$${formatNumber(price)}</label></td>
                         </tr>`;
-                })
-                .sort((a, b) => b.price - a.price);
+                    })
+                    .sort((a, b) => b.price - a.price);
 
                 document.querySelector('.hardyCTTable').innerHTML = `
                 <table>
                     <tr><th>Image</th><th>Item Name</th><th>Amount</th><th>Price</th><th>Total</th></tr>
                     ${rows.join('')}
-                    <tr>
-                  <td><img src="/images/items/315/medium.png"></td>
-                  <td>Allan, Please adḍ details!</td>
-                  <td>0</td>
-                  <td>$0</td>
-                  <td>$0</td>
-                </tr>
                 </table>
                 <p>Total value: $${formatNumber(calc.totalValue)}</p>
                 <p>Number of Items: ${calc.count}</p>
