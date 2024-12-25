@@ -14,7 +14,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    ////nyxl debug version
+    ////
     if (document.querySelector("#hardy_ct_placeholder_check")) return;
     const placeholder = document.createElement("div");
     placeholder.id = "hardy_ct_placeholder_check";
@@ -286,11 +286,7 @@
             } else if (url.includes("christmas_town.php?q=miniGameAction")) {
                 let body = false;
                 if (init.body) {
-                    try {
                     body = JSON.parse(init.body);
-                    } catch (error) {
-                        alert("1: "+error.message);
-                    }
                 }
                 if (data.prizes && data.prizes.length > 0) {
                     const savedData = getRecordedPrizes();
@@ -635,7 +631,6 @@
             }
             savePrefs();
         } else {
-            try {
             saved = JSON.parse(info);
             for (const title in options.checkbox) {
                 if (!saved.checkbox[title]) {
@@ -646,9 +641,6 @@
                 }
             }
         }
-            } catch (error) {
-                        alert("2: "+error.message);
-                    }
         chirp_sound.getLast();
     }
 
@@ -759,12 +751,7 @@
     }
     function getRecordedPrizes() {
         const storedInfo = localStorage.getItem("ctHelperFound") || '{"items":{}}';
-        try {
         return JSON.parse(storedInfo);
-            } catch (error) {
-                        alert("3: "+error.message);
-            return {"items": {}}
-                    }
     }
     function setRecordPrizes(obj) {
         localStorage.setItem("ctHelperFound", JSON.stringify(obj));
@@ -855,11 +842,7 @@
 
             function populateItemTable() {
                 const itemData = localStorage.getItem('ctHelperItemInfo');
-                try {
                 const marketValueData = itemData ? JSON.parse(itemData) : null;
-                    } catch (error) {
-                        alert("4: "+error.message);
-                    }
 
                 if (!marketValueData) {
                     showErrorMessage(
