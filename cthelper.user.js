@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Christmas Town Helper
 // @namespace    hardy.ct.helper
-// @version      3.0.2
+// @version      3.0.3
 // @description  Christmas Town Helper. Highlights Items, Chests, NPCs. And Games Cheat
 // @author       Hardy [2131687]
 // @match        https://www.torn.com/christmas_town.php*
@@ -18,11 +18,12 @@
 (function () {
     'use strict';
     ////
-    const version = "3.0.2";
+    const version = "3.0.3";
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
     let cdForTypingGame;
+    let cdForGarland;
     const chirp = new Audio("https://www.torn.com/js/chat/sounds/Chirp_1.mp3");
     const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" }, "typoGame": { "name": "Typocalypse Helper", "def": "yes" }, "garland": { "name": "Garland Assemble Helper", "def": "yes" }, "chirp_alert_ct": { "name": "Chirp Alert", "def": "no" } }, "api_ct": "" };
 
@@ -519,7 +520,59 @@
                     possible_rotations_obj[key] = removeDuplicates(possible_rotations_obj[key]);
                 }
             }
-
+            function createADJs() {
+                for (const key in possible_rotations_obj) {
+                    if (possible_rotations_obj[key].length === 1) {
+                        for (const possible_rot of possible_rotations_obj[key]) {
+                            const a = Number(key.split("_")[0]);
+                            const b = Number(key.split("_")[1]);
+                            possible_rot.adj = createLimitationsForAdjacentCells(matrix, a, b, possible_rot.connections);
+                        }
+                    }
+                }
+            }
+            function reducePossibilities() {
+                const newObj = {};
+                for (const key in possible_rotations_obj) {
+                    if (possible_rotations_obj[key].length === 1) {
+                        for (const possible_rot of possible_rotations_obj[key]) {
+                            const a = Number(key.split("_")[0]);
+                            const b = Number(key.split("_")[1]);
+                            for (const dir in possible_rot.adj) {
+                                const adj = possible_rot.adj[dir];
+                                if (adj.length > 0) {
+                                    const adjCell_cords = getAdjacentCords(a, b, dir);
+                                    if (possible_rotations_obj[`${adjCell_cords[0]}_${adjCell_cords[1]}`]) {
+                                        const adjCell = possible_rotations_obj[`${adjCell_cords[0]}_${adjCell_cords[1]}`];
+                                        if (adjCell.length > 1) {
+                                            for (const rot of adjCell) {
+                                                if (adj.includes(rot.rot)) {
+                                                    const n = adjCell_cords[0];
+                                                    const p = adjCell_cords[1]
+                                                    if (!newObj[`${n}_${p}`]) {
+                                                        newObj[`${n}_${p}`] = [{ "rot": rot.rot, "connections": rot.connections }]
+                                                    } else {
+                                                        newObj[`${n}_${p}`].push({ "rot": rot.rot, "connections": rot.connections })
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                for (const key in newObj) {
+                    possible_rotations_obj[key] = newObj[key];
+                }
+            }
+            createADJs();
+            reducePossibilities();
+            createADJs();
+            reducePossibilities();
+            self.html = `Solving...`
+            this.update();
             function isSolution(combination) {
                 const testCombination = JSON.parse(JSON.stringify(matrix));
                 for (const key in combination) {
@@ -530,7 +583,7 @@
                 if (garlandIsSolved(testCombination)) {
                     self.garlandAssembleGrid_solved = testCombination;
                     const clicks = calculateClicks(self.garlandAssembleGrid, self.garlandAssembleGrid_solved);
-                    self.html = `Solution Found!!!!`;
+                    self.html = `<strong>Solve the puzzle by continuously clicking on yellow tiles until they no longer appear yellow.</strong> However, click slowly to avoid unnecessary clicks. Do not interact with any other tiles.`;
                     self.update();
                     garlandColor(clicks);
                     return true;
@@ -725,7 +778,8 @@
                             gameHelper.state = "Garland Assemble";
                             gameHelper.start();
                             gameHelper.garlandAssembleGrid = data;
-                            gameHelper.garlandAssembleSolve(data);
+                            setTimeout(() => gameHelper.garlandAssembleSolve(data)
+                                , 500);
                         }
                     }
                 } else {
@@ -1182,6 +1236,18 @@
                 return grid.tails[a + 1][b];
         }
     }
+    function getAdjacentCords(a, b, direction) {
+        switch (direction) {
+            case "r":
+                return [a, b + 1];
+            case "l":
+                return [a, b - 1];
+            case "t":
+                return [a - 1, b];
+            case "b":
+                return [a + 1, b];
+        }
+    }
     function getOppositeDir(direction) {
         const dir_obj = { "r": "l", "l": "r", "t": "b", "b": "t" };
         return dir_obj[direction];
@@ -1322,35 +1388,76 @@
         }
         return rot;
     }
-    function garlandColor(clicks) {
-        const rows = document.querySelectorAll('div[class^="ctMiniGameWrapper"] div[class^="fixedSizeBoard"] div[class^="tileRow"]');
-        let a = 0;
-        let b = 0;
-        console.log(1);
-        for (const row of rows) {
-            const cols = row.querySelectorAll('div[class^="tile"]');
-            for (const col of cols) {
-                col.setAttribute("ct_garland_xy_info", `x_${a}_y_${b}`);
-                b += 1;
-                if (b === 5) {
-                    b = 0;
-                    a += 1;
+    function possibleOptionsForAdjacentCell(grid, a, b, direction) {
+        const cell = getAdjacentCell(grid, a, b, direction);
+        if (cell === null) {
+            return null;
+        } else {
+            const img = cell.imageName;
+            const array = [];
+            if (img.includes("angle")) {
+                const possibleAngles = [0, 90, 180, 270];
+                for (const angle of possibleAngles) {
+                    if (getConnection("angle", angle).includes(getOppositeDir(direction))) {
+                        array.push(angle);
+                    }
+                }
+            } else if (img.includes('straight')) {
+                const possibleAngles = [0, 90];
+                for (const angle of possibleAngles) {
+                    if (getConnection("angle", angle).includes(getOppositeDir(direction))) {
+                        array.push(angle);
+                    }
                 }
             }
+            return array;
         }
-        console.log(2);
-        for (const click of clicks) {
-            const x = click[0];
-            const y = click[1];
-            const num = click[2];
-            const cell = document.querySelector(`div[ct_garland_xy_info="x_${x}_y_${y}"]`);
-            cell.setAttribute("ct_garland_clicks", `num_${num}`);
-            cell.addEventListener("click", (e) => {
-                const txt = e.target.getAttribute("ct_garland_clicks");
-                const num = Number(txt.replace("num_", ""));
-                const rem = num - 1;
-                e.target.setAttribute("ct_garland_clicks", `num_${rem}`);
-            })
+    }
+    function createLimitationsForAdjacentCells(grid, a, b, connections) {
+        const obj = {};
+        for (const direction of connections) {
+            const array = possibleOptionsForAdjacentCell(grid, a, b, direction);
+            if (array !== null) {
+                obj[direction] = array;
+            } else {
+                obj[direction] = [];
+            }
+        }
+        return obj;
+    }
+    function garlandColor(clicks) {
+        if (!document.querySelector('div[ct_garland_xy_info="x_0_y_0"]')) {
+            clearInterval(cdForGarland);
+            const rows = document.querySelectorAll('div[class^="ctMiniGameWrapper"] div[class^="fixedSizeBoard"] div[class^="tileRow"]');
+            let a = 0;
+            let b = 0;
+            for (const row of rows) {
+                const cols = row.querySelectorAll('div[class^="tile"]');
+                for (const col of cols) {
+                    col.setAttribute("ct_garland_xy_info", `x_${a}_y_${b}`);
+                    b += 1;
+                    if (b === 5) {
+                        b = 0;
+                        a += 1;
+                    }
+                }
+            }
+            for (const click of clicks) {
+                const x = click[0];
+                const y = click[1];
+                const num = click[2];
+                const cell = document.querySelector(`div[ct_garland_xy_info="x_${x}_y_${y}"]`);
+                cell.setAttribute("ct_garland_clicks", `num_${num}`);
+                cell.addEventListener("click", (e) => {
+                    const txt = e.target.getAttribute("ct_garland_clicks");
+                    const num = Number(txt.replace("num_", ""));
+                    const rem = num - 1;
+                    e.target.setAttribute("ct_garland_clicks", `num_${rem}`);
+                })
+            }
+            cdForGarland = setInterval(() => {
+                garlandColor(clicks)
+            }, 2000);
         }
     }
     function getRecordedPrizes() {
