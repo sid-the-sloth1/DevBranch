@@ -177,7 +177,7 @@
                 this.update();
             }, 500);
         },
-        "garlandAssembleSolve": function(gridData) {
+        "garlandAssembleSolve": function (gridData) {
             const self = this;
             const ends = getEnds(gridData);
             const matrix = gridData;
@@ -530,8 +530,9 @@
                 if (garlandIsSolved(testCombination)) {
                     self.garlandAssembleGrid_solved = testCombination;
                     const clicks = calculateClicks(self.garlandAssembleGrid, self.garlandAssembleGrid_solved);
-                    self.html = `Solution Found!!!!: ${clicks.join(", ")}`;
+                    self.html = `Solution Found!!!!`;
                     self.update();
+                    garlandColor(clicks);
                     return true;
                 }
                 return false;
@@ -1224,7 +1225,7 @@
             }
         }
     }
-     function garlandIsSolved(gridData) {
+    function garlandIsSolved(gridData) {
         let a = 0;
         let b = 0;
         const ends = getEnds(gridData);
@@ -1269,58 +1270,89 @@
         let b = 0;
         const array = [];
         for (let i = 0; i < 25; i++) {
-          let clicks = 0;
-          const orig_cell = originalGrid.tails[a][b];
-          const sol_cell = solutionGrid.tails[a][b];
-          if (orig_cell !== null && sol_cell !== null) {
-            const img = orig_cell.imageName;
-            if (!img.includes("cross")) {
-              const orig_rot = normaliseRotationValue(orig_cell.rotation, img);
-              const sol_rot = normaliseRotationValue(sol_cell.rotation, img);
-              if (orig_rot !== sol_rot) {
-                if (img.includes("straight")) {
-                  clicks += 1;
-                } else if (img.includes("angle")) {
-                  if (orig_rot > sol_rot) {
-                    clicks += ((360 - orig_rot)/90)+(sol_rot/90)
-                  } else {
-                    clicks += (sol_rot - orig_rot)/90;
-                  }
+            let clicks = 0;
+            const orig_cell = originalGrid.tails[a][b];
+            const sol_cell = solutionGrid.tails[a][b];
+            if (orig_cell !== null && sol_cell !== null) {
+                const img = orig_cell.imageName;
+                if (!img.includes("cross")) {
+                    const orig_rot = normaliseRotationValue(orig_cell.rotation, img);
+                    const sol_rot = normaliseRotationValue(sol_cell.rotation, img);
+                    if (orig_rot !== sol_rot) {
+                        if (img.includes("straight")) {
+                            clicks += 1;
+                        } else if (img.includes("angle")) {
+                            if (orig_rot > sol_rot) {
+                                clicks += ((360 - orig_rot) / 90) + (sol_rot / 90)
+                            } else {
+                                clicks += (sol_rot - orig_rot) / 90;
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-          if (clicks > 0) {
-            array.push(`${a}_${b}: ${clicks} clicks`);
-          }
-          b += 1;
-          if (b === 5) {
-            b = 0;
-            a += 1;
-          }
+            if (clicks > 0) {
+                array.push([a, b, clicks]);
+            }
+            b += 1;
+            if (b === 5) {
+                b = 0;
+                a += 1;
+            }
         }
         return array;
-      }
-      function normaliseRotationValue(rotation, img) {
+    }
+    function normaliseRotationValue(rotation, img) {
         let rot = rotation;
         if (rot >= 360) {
-          while (rot >= 360) {
-            rot -= 360;
-          }
+            while (rot >= 360) {
+                rot -= 360;
+            }
         }
         if (img.includes("straight")) {
-          if (rot === 0 || rot === 180) {
-            rot = 0;
-          } else if (rot === 270 || rot === 90) {
-            rot = 90;
-          }
+            if (rot === 0 || rot === 180) {
+                rot = 0;
+            } else if (rot === 270 || rot === 90) {
+                rot = 90;
+            }
         } else if (img.includes("angle")) {
-          if (rot === 0) {
-            rot = 360;
-          }
+            if (rot === 0) {
+                rot = 360;
+            }
         }
         return rot;
-      }
+    }
+    function garlandColor(clicks) {
+        const rows = document.querySelectorAll('div[class^="ctMiniGameWrapper"] div[class^="fixedSizeBoard"] div[class^="tileRow"]');
+        let a = 0;
+        let b = 0;
+        console.log(1);
+        for (const row of rows) {
+            const cols = row.querySelectorAll('div[class^="tile"]');
+            for (const col of cols) {
+                col.setAttribute("ct_garland_xy_info", `x_${a}_y_${b}`);
+                b += 1;
+                if (b === 5) {
+                    b = 0;
+                    a += 1;
+                }
+            }
+        }
+        console.log(2);
+        for (const click of clicks) {
+            const x = click[0];
+            const y = click[1];
+            const num = click[2];
+            const cell = document.querySelector(`div[ct_garland_xy_info="x_${x}_y_${y}"]`);
+            cell.setAttribute("ct_garland_clicks", `num_${num}`);
+            cell.addEventListener("click", (e) => {
+                const txt = e.target.getAttribute("ct_garland_clicks");
+                const num = Number(txt.replace("num_", ""));
+                const rem = num - 1;
+                e.target.setAttribute("ct_garland_clicks", `num_${rem}`);
+            })
+        }
+    }
     function getRecordedPrizes() {
         const storedInfo = localStorage.getItem("ctHelperFound") || '{"items":{}}';
         return JSON.parse(storedInfo);
