@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Christmas Town Helper
 // @namespace    hardy.ct.helper
-// @version      3.0.6
+// @version      3.0.7
 // @description  Christmas Town Helper. Highlights Items, Chests, NPCs. And Games Cheat
 // @author       Hardy [2131687]
 // @match        https://www.torn.com/christmas_town.php*
@@ -20,7 +20,7 @@
     placeholder.id = "hardy_ct_placeholder_check";
     placeholder.style.display = "none";
     document.body.appendChild(placeholder);
-    const version = "3.0.6";
+    const version = "3.0.7";
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
