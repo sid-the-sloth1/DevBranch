@@ -30,8 +30,7 @@
     const chirp = new Audio("https://www.torn.com/js/chat/sounds/Chirp_1.mp3");
     const options = { "checkbox": { "items": { "name": "Highlight Items", "def": "yes", "color": "#e4e461" }, "gold_chest": { "name": "Highlight Golden Chests", "def": "yes", "color": "#e4e461" }, "silver_chest": { "name": "Highlight Silver Chests", "def": "yes", "color": "#e4e461" }, "bronze_chest": { "name": "Highlight Bronze Chests", "def": "yes", "color": "#e4e461" }, "combo_chest": { "name": "Highlight Combination Chests", "def": "yes", "color": "#e4e461" }, "chest_keys": { "name": "Highlight Keys", "def": "yes", "color": "#e4e461" }, "highlight_santa": { "name": "Highlight Santa", "def": "yes", "color": "#ff6200" }, "highlight_npc": { "name": "Highlight Other NPCs", "def": "yes", "color": "#ff6200" }, "wreath": { "name": "Christmas Wreath Helper", "def": "yes" }, "snowball_shooter": { "name": "Snowball Shooter Helper", "def": "yes" }, "santa_clawz": { "name": "Santa Clawz Helper", "def": "yes" }, "word_fixer": { "name": "Word Fixer Helper", "def": "yes" }, "hangman": { "name": "Hangman Helper", "def": "yes" }, "typoGame": { "name": "Typocalypse Helper", "def": "yes" }, "garland": { "name": "Garland Assemble Helper", "def": "yes" }, "chirp_alert_ct": { "name": "Chirp Alert", "def": "no" } }, "api_ct": "" };
 
-    //const wordList = ["holly and ivy", "elf", "eve", "fir", "ham", "icy", "ivy", "joy", "pie", "toy", "gift", "gold", "list", "love", "nice", "sled", "star", "wish", "wrap", "xmas", "yule", "angel", "bells", "cider", "elves", "goose", "holly", "jesus", "merry", "myrrh", "party", "skate", "visit", "candle", "creche", "cookie", "eggnog", "family", "frosty", "icicle", "joyful", "manger", "season", "spirit", "tinsel", "turkey", "unwrap", "wonder", "winter", "wreath", "charity", "chimney", "festive", "holiday", "krampus", "mittens", "naughty", "package", "pageant", "rejoice", "rudolph", "scrooge", "snowman", "sweater", "tidings", "firewood", "nativity", "reindeer", "shopping", "snowball", "stocking", "toboggan", "trimming", "vacation", "wise men", "workshop", "yuletide", "chestnuts", "christmas", "fruitcake", "greetings", "mince pie", "mistletoe", "ornaments", "snowflake", "tradition", "candy cane", "decoration", "ice skates", "jack frost", "north pole", "nutcracker", "saint nick", "yule log", "card", "jolly", "hope", "scarf", "candy", "sleigh", "parade", "snowy", "wassail", "blizzard", "noel", "partridge", "give", "carols", "tree", "fireplace", "socks", "lights", "kings", "goodwill", "sugarplum", "bonus", "coal", "snow", "happy", "presents", "pinecone"];
-    const wordList = ["blah", "filler"];
+    const wordList = ["holly and ivy", "elf", "eve", "fir", "ham", "icy", "ivy", "joy", "pie", "toy", "gift", "gold", "list", "love", "nice", "sled", "star", "wish", "wrap", "xmas", "yule", "angel", "bells", "cider", "elves", "goose", "holly", "jesus", "merry", "myrrh", "party", "skate", "visit", "candle", "creche", "cookie", "eggnog", "family", "frosty", "icicle", "joyful", "manger", "season", "spirit", "tinsel", "turkey", "unwrap", "wonder", "winter", "wreath", "charity", "chimney", "festive", "holiday", "krampus", "mittens", "naughty", "package", "pageant", "rejoice", "rudolph", "scrooge", "snowman", "sweater", "tidings", "firewood", "nativity", "reindeer", "shopping", "snowball", "stocking", "toboggan", "trimming", "vacation", "wise men", "workshop", "yuletide", "chestnuts", "christmas", "fruitcake", "greetings", "mince pie", "mistletoe", "ornaments", "snowflake", "tradition", "candy cane", "decoration", "ice skates", "jack frost", "north pole", "nutcracker", "saint nick", "yule log", "card", "jolly", "hope", "scarf", "candy", "sleigh", "parade", "snowy", "wassail", "blizzard", "noel", "partridge", "give", "carols", "tree", "fireplace", "socks", "lights", "kings", "goodwill", "sugarplum", "bonus", "coal", "snow", "happy", "presents", "pinecone"];
     const original_fetch = window.fetch;
     const gameHelper = {
         "state": "Inactive",
@@ -211,7 +210,7 @@
                     gameHelper.update();
                 }).catch(error => {
                     const message = error.message;
-                    if (error === "No solution found.") {
+                    if (error ===  "No solution found.") {
                         GM_setClipboard(`CT Helper Normal Version: ${version}\nFailed to find a solution for Garland Assemble game: ${JSON.stringify(gridData)}`);
                         gameHelper.html = `<label class="ctHelperError">No solution found. The puzzle grid information has been copied to your clipboard. Paste it in a <a href="https://pastebin.com/" target="_blank">Pastebin</a> or any other text pasting site you like and send it to me(<a href="https://www.torn.com/profiles.php?XID=2131687">Father[2131687]</a>) so that I can look further into this issue.</label>`;
                     } else {
@@ -1198,8 +1197,7 @@ body.dark-mode .hardyCTBox2 p, body.dark-mode .hardyCTBox2 td { color: #f0f0f0; 
 .hardyCTBox2 p strong { color: #007bff; font-weight: bold; }
 body.dark-mode .hardyCTBox2 p strong { color: #4ba3ff; }
 .hardyCTTableBox { margin-top: 20px; }
-.ctHelperError { color: red; font-weight: bold; }
-body.dark-mode .ctHelperError { color: #ff6f6f; }
+.ctHelperError a{text-decoration:none;color:#5c5cc6}body.dark-mode .ctHelperError a{color:#a5a5e8}.ctHelperError{color:red;font-weight:700}body.dark-mode .ctHelperError{color:#f79696}
 .ctHelperSuccess { color: green; font-weight: bold; }
 body.dark-mode .ctHelperSuccess { color: #6fff6f; }
 .hardy_modal_content button, .hardyCTBox2 button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; font-size: 14px; cursor: pointer; }
@@ -1790,8 +1788,7 @@ body.dark-mode .ctRecordLink { color: #4ba3ff; }
                     const solution = this.#generateCombinations();
                     if (solution) {
                         console.timeEnd("GarlandSolver");
-                        //resolve(solution);
-                        reject("No solution found.");
+                        resolve(solution);
                     } else {
                         console.timeEnd("GarlandSolver");
                         reject("No solution found.");
