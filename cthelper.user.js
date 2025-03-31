@@ -197,7 +197,7 @@
                 .then(solution => {
                     const clicks = calculateClicks(gridData, solution);
                     garlandColor(clicks);
-                    gameHelper.html = `<label class="ctHelperSuccess">Soflve the puzzle by continuously clicking on yellow tiles until they no longer appear yellow.</label> However, click slowly to avoid unnecessary clicks. Do not interact with any other tiles.`;
+                    gameHelper.html = `<label class="ctHelperSuccess">Solve the puzzle by continuously clicking on yellow tiles until they no longer appear yellow.</label> However, click slowly to avoid unnecessary clicks. Do not interact with any other tiles.`;
                     gameHelper.update();
                 }).catch(err => console.error("Error:", err));
 
