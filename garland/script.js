@@ -27,6 +27,20 @@ for (let i = 0; i < 25; i++) {
 }
 populateGrid(data);
 
+document.querySelector("#isSolved").addEventListener('click', () => {
+    const instance = new GarlandSolver(data);
+
+    instance.solve()
+        .then(solution => {
+            console.log("Solution found:");
+            console.log(solution)
+            populateGrid(solution);
+        })
+
+        .catch(err => console.error("Error:", err));
+})
+
+
 
 function populateGrid(dataGrid) {
     createEnds(dataGrid.ends);
