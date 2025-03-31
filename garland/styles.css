@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
+    width: 90vw;
+    max-width: 530px;
+    aspect-ratio: 1 / 1;
+    background-color: #1e1e1e;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #333;
+}
+
+.grid-item {
+    background-color: #2b2b2b;
+    border: 1px solid #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.grid-item:hover {
+    background-color: #444;
+    transform: scale(1.05);
+}
+
+.grid-item::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.grid-item.end-right::after {
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: red;
+}
+
+.grid-item.end-left::after {
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: blue;
+}
+
+.grid-item.end-top::after {
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: green;
+}
+
+.grid-item.end-bottom::after {
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: red;
+}
+
+#result {
+    margin-top: 20px;
+    text-align: center;
+}
+
+button {
+    background-color: #1e90ff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #1c86ee;
+}
+
+button:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+}
