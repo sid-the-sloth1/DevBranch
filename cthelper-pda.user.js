@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Christmas Town Helper
 // @namespace    hardy.ct.helper
-// @version      3.0.8
+// @version      3.0.10
 // @description  Christmas Town Helper. Highlights Items, Chests, NPCs. And Games Cheat
 // @author       Hardy [2131687]
 // @match        https://www.torn.com/christmas_town.php*
@@ -16,12 +16,22 @@
 (function () {
     'use strict';
     ////
+
+    function reloadPage() {
+        window.flutter_inappwebview.callHandler('reloadPage')
+            .then(() => {
+                console.log("Page reloaded successfully");
+            })
+            .catch(error => {
+                console.error("Error reloading page:", error);
+            });
+    }
     if (document.querySelector("#hardy_ct_placeholder_check")) return;
     const placeholder = document.createElement("div");
     placeholder.id = "hardy_ct_placeholder_check";
     placeholder.style.display = "none";
     document.body.appendChild(placeholder);
-    const version = "3.0.8";
+    const version = "3.0.10";
     const waitObj = {};
     const metadata = { "cache": { "spawn_rate": 0, "speed_rate": 0, "hangman": { "list": [], "chars": [], "len": false } }, "settings": { "games": { "wordFix": false } } };
     let saved;
@@ -210,7 +220,7 @@
                     gameHelper.update();
                 }).catch(error => {
                     const message = error.message;
-                    if (error ===  "No solution found.") {
+                    if (error === "No solution found.") {
                         GM_setClipboard(`CT Helper Normal Version: ${version}\nFailed to find a solution for Garland Assemble game: ${JSON.stringify(gridData)}`);
                         gameHelper.html = `<label class="ctHelperError">No solution found. The puzzle grid information has been copied to your clipboard. Paste it in a <a href="https://pastebin.com/" target="_blank">Pastebin</a> or any other text pasting site you like and send it to me(<a href="https://www.torn.com/profiles.php?XID=2131687">Father[2131687]</a>) so that I can look further into this issue.</label>`;
                     } else {
@@ -787,7 +797,7 @@
             });
             box.querySelector(".hardy-ct-itemstable").addEventListener("click", () => {
                 window.location.href = "https://www.torn.com/christmas_town.php#/page=ctitemsFound";
-                window.location.reload();
+                reloadPage();
             });
         }
     }
